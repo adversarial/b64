@@ -21,7 +21,6 @@ section '.text' code executable writeable
 b64index db 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
          db 'abcdefghijklmnopqrstuvwxyz'
          db '0123456789+/'
-modindex db 0,2,1
 
 ; void __stdcall b64_encode(const char* cIn, char* szOut, signed int cbIn)
 b64_encode:
@@ -65,12 +64,13 @@ b64_encode:
 
         pop eax           ; strlen
         mov ecx, 3
-        cdq               ; if (strlen % 3)
-        div ecx           ;    numPadding = (3 - (strlen % 3))
-        mov ebx, modindex
-        movzx ecx, byte [ebx+edx]
-        jecxz .done       ; else goto done
-        sub edi, ecx      ; extra chars were padding ('A')s
+        cdq               ;
+        div ecx           ; if (!strlen(szIn) % 3)
+        xchg ecx, eax     ;     goto .done
+        jecxz .done       ; else
+        sub eax, ecx      ;     numPadding = (3 - (strlen % 3))
+        sub edi, eax      ;     szOut -= numPadding
+        mov ecx, eax
         mov al, PADDINGCHAR
     .pad:
         stosb
