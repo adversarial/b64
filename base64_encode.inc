@@ -10,11 +10,11 @@ public b64_encode as '_base64_encode@12'
 ;======== Code =======================
 ; void __stdcall b64_encode(const char* cIn, char* szOut, signed int cbIn)
 b64_encode:
-        push ebx esi edi
+        push ebp ebx esi edi
                                  ; stdcall, eip, arg
-        mov esi, [esp+4*4+4*0] ; cIn
-        mov edi, [esp+4*4+4*1] ; szOut
-        mov ecx, [esp+4*4+4*2] ; cbIn
+        mov esi, [esp+4*5+4*0] ; cIn
+        mov edi, [esp+4*5+4*1] ; szOut
+        mov ecx, [esp+4*5+4*2] ; cbIn
         mov ebx, b64index
 
         cld
@@ -27,7 +27,6 @@ b64_encode:
         xor eax, eax      ; apparently FASM 1.7x doesn't support anonymous labels
                           ; in repeat statements.
                           ; http://board.flatassembler.net/topic.php?t=1572
-
         sub ecx, 1
         jl @f             ; signed pls
         lodsb
@@ -43,6 +42,7 @@ b64_encode:
         lodsb
     @@:
         shl eax, 8        ; 11 22 33 00
+
         mov ebp, ecx      ; push ecx
         mov ecx, 4
     .expand:
@@ -57,6 +57,7 @@ b64_encode:
         test ecx, ecx
         jg .encode
 
+    .checkpadding:
         pop eax           ; strlen
         mov ecx, 3
         cdq               ;
@@ -72,5 +73,5 @@ b64_encode:
         sub ecx, 1
         jnz .pad
     .done:
-        pop edi esi ebx
+        pop edi esi ebx ebp
         ret 2*4
