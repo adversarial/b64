@@ -32,8 +32,8 @@ extern "C" {
  *          add base64.obj to link parameters
  */
 
-    void __stdcall b64_encode(const char* cIn, char* szOut, signed int cbIn);
-    void __stdcall b64_decode(const char* cIn, char* szOut, signed int cbIn);
+    void __stdcall base64_encode(const char* cIn, char* szOut, signed int cbIn);
+    void __stdcall base64_decode(const char* cIn, char* szOut, signed int cbIn);
 
 #ifdef __cplusplus
 };
